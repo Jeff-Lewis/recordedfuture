@@ -12,7 +12,7 @@ def query(q, usecompression=True):
 	and return a dict corresponding to the JSON object returned as a result
 	of that query.    
 	"""
-    try:
+	try:
 		url = 'http://api.recordedfuture.com/ws/rfq/instances?%s'
 		
 		if usecompression:
@@ -27,7 +27,7 @@ def query(q, usecompression=True):
 			data = zlib.decompress(data)
         #print data
 		return json.loads(data)
-    except Exception, e:
+	except Exception, e:
 		print str(e)
 		return {'status': 'FAILURE', 'errors': str(e)}
 
@@ -52,30 +52,30 @@ def daterange(start, stop, step=datetime.timedelta(days=1), inclusive=False):
 
 def flatten_dict(d):
 	"""Produce a flattened list of key-value pairs from a nested dictionary."""
-    res={}
-    for k,v in d.items():
-        if isinstance(v,dict):
-            subdict=flatten_dict(v)
-            for subk,subv in subdict.items():
-                res[k+'.'+subk]=subv
-        else:
-            res[k]=v
-    return res
+	res={}
+	for k,v in d.items():
+		if isinstance(v,dict):
+			subdict=flatten_dict(v)
+			for subk,subv in subdict.items():
+				res[k+'.'+subk]=subv
+	else:
+		res[k]=v
+	return res
 
 def parse_value(val,entities):
 	"""
 	Parse either a value or list of values and return combined results free
 	of tab and newline characters.
 	"""
-    if unicode(val) in entities:
-        val=entities[unicode(val)]['name']
-        val=''.join([c for c in val if ord(c)<128])
-        return val.replace('\n',' ').replace('\t',' ').strip()
-    elif isinstance(val,unicode):
-        val=''.join([c for c in val if ord(c)<128])
-        return val.replace('\n',' ').replace('\t',' ').strip()
-    else:
-        return val
+	if unicode(val) in entities:
+		val=entities[unicode(val)]['name']
+		val=''.join([c for c in val if ord(c)<128])
+		return val.replace('\n',' ').replace('\t',' ').strip()
+	elif isinstance(val,unicode):
+		val=''.join([c for c in val if ord(c)<128])
+		return val.replace('\n',' ').replace('\t',' ').strip()
+	else:
+		return val
 
 
 def flatten_query(q, outputorder=False):
