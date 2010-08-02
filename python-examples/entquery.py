@@ -5,25 +5,22 @@
 #Some output is sent to standard error for informational purposes.
 
 #Example run:
-#entquery.py tickerfile.txt 20100201 20100728 > outputfile.txt
+#entquery.py TOKEN tickerfile.txt 20100201 20100728 > outputfile.txt
 
 
 import sys, recfut, json, datetime
 from dateutil import parser
 
 
-#Set local variables.
-token = '' 	#Insert your API token here.
-
-
-#Read in a ticker file. If no ticker file is given, display an error message and quit.
-
-if len(sys.argv) < 2:
-	print >>sys.stderr, "No ticker file supplied."
-	print >>sys.stderr, "Usage: " + sys.argv[0] + " tickerfile [min_date [max_date]]"
+#Read in a ticker file. If no ticker file or token is given, display an error message and quit.
+if len(sys.argv) < 3:
+	print >>sys.stderr, "No ticker file or token supplied."
+	print >>sys.stderr, "Usage: " + sys.argv[0] + " tickerfile token [min_date [max_date]]"
 	exit(1)
 
-qtickerf = open(sys.argv[1], "r")
+token = sys.argv[1]
+
+qtickerf = open(sys.argv[2], "r")
 tickerlist = []
 
 for line in qtickerf:
@@ -34,10 +31,10 @@ qtickerf.close()
 #If no date is given, use today.
 mindate = maxdate = datetime.datetime.now()
 
-if len(sys.argv) > 2:
-	mindate = maxdate = parser.parse(sys.argv[2])
 if len(sys.argv) > 3:
-	maxdate = parser.parse(sys.argv[3])
+	mindate = maxdate = parser.parse(sys.argv[3])
+if len(sys.argv) > 4:
+	maxdate = parser.parse(sys.argv[4])
 
 
 #This is an instance query.
@@ -50,7 +47,6 @@ entquerystring = """
 					"max": ""
 			}
 		},
-		"limit": 500,
 		"attributes": {
 			"type": "Company",
 			"entity": {
