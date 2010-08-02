@@ -5,7 +5,7 @@
 #Some output is sent to standard error for informational purposes.
 
 #Example run:
-#entquery.py TOKEN tickerfile.txt 20100201 20100728 > outputfile.txt
+#company-entquery.py TOKEN tickerfile.txt 20100201 20100728 > outputfile.txt
 
 
 import sys, recfut, json, datetime
