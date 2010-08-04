@@ -141,6 +141,6 @@ def flatten_query(q, outputorder=False):
 	retrows = []
 	retrows.append('\t'.join(headers))
 	for row in rows:
-		retrows.append(','.join(['"'+v if isinstance(v,unicode) else str(v) for v in row]))
+		retrows.append('\t'.join(['"'+v if isinstance(v,unicode) else str(v) for v in row]))
 		
 	return retrows
