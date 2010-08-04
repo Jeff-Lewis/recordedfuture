@@ -5,10 +5,10 @@
 #Some output is sent to standard error for informational purposes.
 
 #Example run:
-#company-aggquery.py TOKEN tickerfile.txt 20100201 20100728 > outputfile.txt
+#company-aggquery.py TOKEN tickerfile.txt 2010-02-01 2010-07-28 > outputfile.txt
 
 import sys, recfut, json, datetime
-from dateutil import parser
+from datetime import datetime
 
 #Read in a ticker file and token. If no ticker file or token is given, display an error message and quit.
 if len(sys.argv) < 3:
@@ -27,12 +27,12 @@ qtickerf.close()
 
 #Set default dates. These can be overridden with command line options.
 #If no date is given, use today.
-mindate = maxdate = datetime.datetime.now()
+mindate = maxdate = datetime.now()
 
 if len(sys.argv) > 3:
-	mindate = maxdate = parser.parse(sys.argv[3])
+	mindate = maxdate = datetime.strptime(sys.argv[3], "%Y-%m-%d") #parser.parse(sys.argv[3])
 if len(sys.argv) > 4:
-	maxdate = parser.parse(sys.argv[4])
+	maxdate = datetime.strptime(sys.argv[4], "%Y-%m-%d") #parser.parse(sys.argv[4])
 
 
 #This is an aggregate query.
@@ -79,7 +79,7 @@ for single_date in recfut.daterange(mindate, maxdate, inclusive=True):
 	
 	qdict["aggregate"]["document"]["published"]["min"] = unicode(single_date.strftime("%Y-%m-%d"))
 	qdict["aggregate"]["document"]["published"]["max"] = unicode(single_date.strftime("%Y-%m-%d"))	
-	
+	print json.dumps(qdict)
 	#If we receive an error, send it to STDERR, but continue anyway.
 	res = recfut.query(q=json.dumps(qdict))
 	if res["status"] == "FAILURE":

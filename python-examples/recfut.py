@@ -58,8 +58,8 @@ def flatten_dict(d):
 			subdict=flatten_dict(v)
 			for subk,subv in subdict.items():
 				res[k+'.'+subk]=subv
-	else:
-		res[k]=v
+		else:
+			res[k]=v
 	return res
 
 def parse_value(val,entities):
@@ -141,6 +141,6 @@ def flatten_query(q, outputorder=False):
 	retrows = []
 	retrows.append('\t'.join(headers))
 	for row in rows:
-		retrows.append('\t'.join(['"'+v if isinstance(v,unicode) else str(v) for v in row]))
+		retrows.append(','.join(['"'+v if isinstance(v,unicode) else str(v) for v in row]))
 		
 	return retrows

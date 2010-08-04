@@ -5,11 +5,11 @@
 #Some output is sent to standard error for informational purposes.
 
 #Example run:
-#company-entquery.py TOKEN tickerfile.txt 20100201 20100728 > outputfile.txt
+#company-entquery.py TOKEN tickerfile.txt 2010-02-01 2010-07-28 > outputfile.txt
 
 
 import sys, recfut, json, datetime
-from dateutil import parser
+from datetime import datetime
 
 
 #Read in a ticker file. If no ticker file or token is given, display an error message and quit.
@@ -29,12 +29,12 @@ qtickerf.close()
 
 #Set default dates. These can be overridden with command line options.
 #If no date is given, use today.
-mindate = maxdate = datetime.datetime.now()
+mindate = maxdate = datetime.now()
 
 if len(sys.argv) > 3:
-	mindate = maxdate = parser.parse(sys.argv[3])
+	mindate = maxdate = datetime.strptime(sys.argv[3], "%Y-%m-%d") #parser.parse(sys.argv[3])
 if len(sys.argv) > 4:
-	maxdate = parser.parse(sys.argv[4])
+	maxdate = datetime.strptime(sys.argv[4], "%Y-%m-%d") #parser.parse(sys.argv[4])
 
 
 #This is an instance query.
@@ -66,7 +66,7 @@ entquerystring = """
 
 
 #You can set whichever output fields you want to here, by default we use a limited selection
-outfields = ["id","time","source.name", "document.published","type", "momentum", "sentiment"]
+outfields = ["id","time","source.name", "document.published","document.type","type", "momentum", "sentiment"]
 #outfields = [ "id", "type", "time", "momentum", "sentiment", "attributes", "source.name", "source.topic", "document.id", "document.title", "source.description", "source.media_type", "document.published", "fragment", "fragment_coentities", "document_coentities", "document.coentities" ]
 
 #Set the order of the output fields we'd like to see. If you decide to
@@ -115,7 +115,6 @@ for ticker in tickerlist:
 	
 	#Now remove the EntityOccurrence filter.
 	del qdict["instance"]["type"]
-	
 	#Run the new query.
 	res = recfut.flatten_query(q=json.dumps(qdict), outputorder=outorder)
 	
