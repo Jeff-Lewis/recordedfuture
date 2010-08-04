@@ -79,7 +79,6 @@ for single_date in recfut.daterange(mindate, maxdate, inclusive=True):
 	
 	qdict["aggregate"]["document"]["published"]["min"] = unicode(single_date.strftime("%Y-%m-%d"))
 	qdict["aggregate"]["document"]["published"]["max"] = unicode(single_date.strftime("%Y-%m-%d"))	
-	print json.dumps(qdict)
 	#If we receive an error, send it to STDERR, but continue anyway.
 	res = recfut.query(q=json.dumps(qdict))
 	if res["status"] == "FAILURE":
