@@ -85,9 +85,12 @@ for single_date in recfut.daterange(mindate, maxdate, inclusive=True):
 		print >>sys.stderr, res
 		continue
 	
+	if len(res["aggregates"].split('\n')) < 3:
+		continue
+	
 	if run:
 		print '\n'.join(res["aggregates"].split('\n')[1:]),
 	else:
-		print res["aggregates"],
+		print '\n'.join(res["aggregates"].split('\n')),
 	run = True
 
