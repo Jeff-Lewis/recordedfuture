@@ -70,7 +70,7 @@ querystring = """
   },
 
   "output": {
-    "fields": ["momentum", "count", "positive", "negative"],
+    "fields": ["count", "momentum", "positive", "negative"],
     "format": "csv"
   },
   "token": ""
@@ -78,7 +78,7 @@ querystring = """
 """
 
 #You can set whichever output fields you want to here, by default we use a limited selection
-outfields = ["momentum", "count", "positive", "negative"]
+outfields = ["count", "momentum", "positive", "negative"]
 
 #Load the query up into a dict for parameterization.
 qdict = json.loads(querystring)
@@ -90,9 +90,9 @@ qdict["aggregate_raw"]["document"]["published"]["min"] = mindate
 qdict["aggregate_raw"]["document"]["published"]["max"] = maxdate
 
 
-#Iterate a single ticker at a time. Send some status output to stderr. 
+#Iterate a single ticker at a time. Send some status output to stderr.
 #If we get an error for a particular ticker, display an error message but continue running.
-print "ticker," + ','.join(outfields)
+print "ticker,id,Day," + ','.join(outfields)
 
 for ticker in tickerlist:
         id = recfut.lookup_id(ticker, token)
@@ -110,5 +110,5 @@ for ticker in tickerlist:
 		continue
 
 	print '\n'.join([ticker + "," + r.rstrip() for r in res[0:-1]])
-	
+
 
