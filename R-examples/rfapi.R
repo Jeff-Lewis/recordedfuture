@@ -13,7 +13,7 @@ load_query <- function(filename) {
 
 run_query <- function(q) {
 	jsonq = toJSON(q)
-	opts = curlOptions(verbose = TRUE, header = FALSE, connecttimeout = 0)
+	opts = curlOptions(header = FALSE, connecttimeout = 0)
 	
 	res <- getBinaryURL(paste(url,curlEscape(jsonq), sep=''), .opts = opts)
 	res <- fromJSON(rawToChar(res))
