@@ -1,0 +1,12 @@
+{
+  "aggregate": {
+    "entity": {"type": "Company", attributes": {"name": "tickers", "string": []}},
+    "document": {"published": {"min": "", "max": ""}},
+    "key": "tickers"
+  },
+  "output": {
+    "fields": ["count", "momentum", "positive", "negative"],
+    "format": "csv"
+  },
+  "token": "TOKEN"
+}
