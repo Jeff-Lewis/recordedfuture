@@ -1,6 +1,6 @@
 {
   "aggregate": {
-    "entity": {"type": "Company", attributes": {"name": "tickers", "string": []}},
+    "entity": {"type": "Company", "attributes": {"name": "tickers", "string": []}},
     "document": {"published": {"min": "", "max": ""}},
     "key": "tickers"
   },
