@@ -4,8 +4,8 @@ source('rfapi.R')
 query <- load_query('aggquery.rfq')
 
 #Set my API token so that the service yields results.
-query$token = YOURTOKEN
-#query$token = paste(Sys.getenv('RFTOKEN'))
+#query$token = YOURTOKEN
+query$token = paste(Sys.getenv('RFTOKEN'))
 
 #You can change the date range like this:
 query$aggregate$document$published$min = "2010-02-05"
