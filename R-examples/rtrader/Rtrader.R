@@ -40,8 +40,8 @@ bought <- list()
 trades <- list()
 
 #Set my API token so that the service yields results.
-#query$token = YOURTOKEN
-query$token = paste(Sys.getenv('RFTOKEN'))
+query$token = YOURTOKEN
+#query$token = paste(Sys.getenv('RFTOKEN'))
 
 #What time do we hold until?
 nexttime = Sys.time()
