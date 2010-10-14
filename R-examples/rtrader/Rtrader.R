@@ -40,8 +40,8 @@ bought <- list()
 trades <- list()
 
 #Set my API token so that the service yields results.
-query$token = YOURTOKEN
-#query$token = paste(Sys.getenv('RFTOKEN'))
+#query$token = YOURTOKEN
+query$token = paste(Sys.getenv('RFTOKEN'))
 
 #What time do we hold until?
 nexttime = Sys.time()
@@ -92,7 +92,7 @@ trades <- lapply(trades, function(x) { append(x, get_quote(x[1])) })
 trades <- as.data.frame(do.call(rbind, lapply(trades, rbind)))
 colnames(trades) <- c("ticker", "tt", "price", "close")
 trades$price <- as.numeric(as.character(trades$price))
-trades$close <- as.numeric(as.character(trades$price))
+trades$close <- as.numeric(as.character(trades$close))
 
 
 #Now calculate returns
