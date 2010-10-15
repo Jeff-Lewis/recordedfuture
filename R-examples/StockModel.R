@@ -1,37 +1,37 @@
 #run these commands just once to install the libraries on your machine
-install.packages("rjson")
-install.packages("RCurl")
-install.packages("fImport")
+#install.packages("rjson")
+#install.packages("RCurl")
+#install.packages("fImport")
 
 library(RCurl)
-library(rjson)
+library(RJSONIO)
 library(fImport)
 token<-"Your Token Here"
 url <- 'http://api.recordedfuture.com/ws/rfq/instances?q='
 
-aggregateQuery<-"{
- \"aggregate_raw\": {
-   \"document\": {\"published\": {\"min\": \"2009-01-01\", \"max\": \"2009-09-30\"}}
+aggregateQuery<-'{
+ "aggregate_raw": {
+   "document": {"published": {"min": "2009-01-01", "max": "2009-09-30"}}
  },
- \"output\": {
-   \"fields\": [\"momentum\", \"count\", \"positive\", \"negative\"],
-   \"format\": \"csv\"
+ "output": {
+   "fields": ["momentum", "count", "positive", "negative"],
+   "format": "csv"
  }
-}"
+}'
 
 
 
-entityQuery<-"{
-    \"entity\": {
-        \"type\": \"Company\",
-        \"attributes\": {
-            \"name\": \"tickers\"
+entityQuery<-'{
+    "entity": {
+        "type": "Company",
+        "attributes": {
+            "name": "tickers"
         }
     },
-    \"output\": {
-        \"entity_details\":{\"Company\": [ \"tickers\"]}
+    "output": {
+        "entity_details":{"Company": ["tickers"]}
     }
-}"
+}'
 
 
 
@@ -92,4 +92,4 @@ out<-out[!(out$weekday=="Sat"),]
 out<-out[!(out$weekday=="Sun"),]
 tail(out)
 model.fit<-lm(marketAdjustedReturns~Momentum+Positive+Negative+weighted.sd,data=out)
-summary(model.fit)
+print(summary(model.fit))
