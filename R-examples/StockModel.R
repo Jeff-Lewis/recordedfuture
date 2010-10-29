@@ -70,7 +70,7 @@ getRFmetrics<-function(ticker){
 
 createDataSet<-function(ticker){
     res<-getRFmetrics(ticker)
-    res$sentiment.difference<- - res$Negative
+    res$sentiment.difference<- res$Positive - res$Negative
     res$weighted.pos <- res$Positive * res$Momentum
     res$weighted.neg <- res$Negative * res$Momentum
     marketData<-as.data.frame(yahooSeries(ticker,from="2009-01-01",to="2010-09-30"))
