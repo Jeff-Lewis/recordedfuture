@@ -73,10 +73,10 @@ createDataSet<-function(ticker){
     res$sentiment.difference<- res$Positive - res$Negative
     res$weighted.pos <- res$Positive * res$Momentum
     res$weighted.neg <- res$Negative * res$Momentum
-    marketData<-as.data.frame(yahooSeries(ticker,from="2009-01-01",to="2010-09-30"))
+    marketData<-as.data.frame(cbind(yahooSeries(ticker,from="2009-01-01",to="2010-09-30")))
     colnames(marketData)<-gsub(paste(ticker,".",sep=""),"",colnames(marketData))
     marketData$returns<-c(returns(marketData$Adj.Close,method="continuous")[-1],NA)
-    spy<-as.data.frame(yahooSeries("SPY",from="2009-01-01",to="2010-09-30"))
+    spy<-as.data.frame(cbind(yahooSeries("SPY",from="2009-01-01",to="2010-09-30")))
     out<-merge(res,marketData,all.x=T,by.x=2,by.y=0)
     spy$spy.returns<-c(returns(spy$SPY.Adj.Close,method="continuous")[-1],NA)
     out<-merge(out,spy,all.x=T,by.x="Day",by.y=0)
