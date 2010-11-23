@@ -19,19 +19,19 @@ def generate_sentiment_sparkline(ticker, from_date, to_date, token):
     n = 20
     pos = [sum(pos[i-n:i])/n for i in range(n,len(pos))]
     neg = [sum(neg[i-n:i])/n for i in range(n,len(neg))]
-    
+
     minpos,maxpos = min(pos),max(pos)
     minneg,maxneg = min(neg),max(neg)
-    
+
     pos = [str(i) for i in pos]
     neg = [str(i) for i in neg]
 
-    #Set up graph formatting. 
+    #Set up graph formatting.
     graph_params = {
         "chs":"200x80",
         "cht":"ls",
         "chco":"000000,FF0000",
-        "chds":"%f,%f,%f,%f" % (minpos,maxpos,minneg,maxneg),
+        "chds":"%f,%f,%f,%f" % (0.0,maxpos,0.0,maxpos),
         "chd":"t:%s|%s" % (",".join(pos), ",".join(neg)),
         "chdl":"Positive|Negative",
         "chdlp":"b",
@@ -39,7 +39,7 @@ def generate_sentiment_sparkline(ticker, from_date, to_date, token):
         "chma":"5,5,5,5"
     }
 
-    #Request the chart from Google. 
+    #Request the chart from Google.
     url = "http://chart.apis.google.com/chart"
     val = urllib.urlopen(url, data=urllib.urlencode(graph_params))
 
@@ -47,14 +47,12 @@ def generate_sentiment_sparkline(ticker, from_date, to_date, token):
 
 if __name__ == "__main__":
     ticker = "AAPL"
-    from_date = "2010-06-01"
+    from_date = "2010-05-21"
     to_date = "2010-11-21"
     token = "MYTOKEN"
-    
+
     val = generate_sentiment_sparkline(ticker, from_date, to_date, token)
-    
+
     f = open("out.png", "w")
     print >>f, val
     f.close()
-    
-    
