@@ -1,0 +1,8 @@
+{
+    "aggregate_raw":{
+        "entity":{"id":[33312449]},
+        "document":{"published":{"min":"2009-01-01","max":"2010-11-20"}}
+    },
+    "output":{"fields":["positive","negative","momentum","count"], "format":"csv"},
+    "token":"TOKEN"
+}
