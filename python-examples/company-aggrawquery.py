@@ -109,6 +109,6 @@ for ticker in tickerlist:
 	if len(res) < 2:
 		continue
 
-	print '\n'.join([ticker + "," + r.rstrip() for r in res[0:-1]])
+	print '\n'.join([ticker + "," + r.rstrip() for r in res[1:-1]])
 
 
