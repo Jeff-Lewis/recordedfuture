@@ -105,7 +105,7 @@ ticker_lookup <- function(tickers, token) {
         ed <- res$entity_details
         
         #Convert the results to a data.frame
-        entity_table <- as.data.frame(do.call("rbind", mapply(function(y, x) cbind(y, x$tickers, x$momentum), names(ed), ed)))
+        entity_table <- data.frame(t(mapply(function(y, x) cbind(y, x$tickers, x$momentum), names(ed), ed)))
         colnames(entity_table) <- c("Entity","Ticker","Momentum")
         entity_table$Momentum <- as.numeric(as.character(entity_table$Momentum))
         

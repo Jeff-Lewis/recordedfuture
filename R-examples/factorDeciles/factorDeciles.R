@@ -8,7 +8,7 @@ source("rfapi.R")
 #Configure portfolio parameters here.
 tickerfile <- "sp500-tickers.txt" #Name of a file that contains the tickers I'm interested in.
 from <- "2009-01-01" #Start date.
-to <- "2011-03-01" #End date.
+to <- "2011-02-01" #End date.
 token <- paste(Sys.getenv('RFTOKEN')) #My Recorded Future token.
 
 #Define a function which pulls market data and computes leading 1-day returns.
