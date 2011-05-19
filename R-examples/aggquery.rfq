@@ -1,8 +1,8 @@
 {
   "aggregate": {
-    "entity": {"type": "Company", "attributes": {"name": "tickers", "string": []}},
-    "document": {"published": {"min": "", "max": ""}},
-    "key": "tickers"
+    "name":"daily_330pm",
+    "entity": {"id":[]},
+    "document": {"published": {"min": "", "max": ""}}
   },
   "output": {
     "fields": ["count", "momentum", "positive", "negative"],
