@@ -52,26 +52,21 @@ qtickerf.close()
 
 #Set default dates. These can be overridden with command line options.
 #If no date is given, use today.
-mindate = maxdate = datetime.now()
+mindate = maxdate = datetime.now().strftime("%Y-%m-%d")
 
 if len(sys.argv) > 3:
-	mindate = maxdate = datetime.strptime(sys.argv[3], "%Y-%m-%d") #parser.parse(sys.argv[3])
+	mindate = maxdate = sys.argv[3]
 if len(sys.argv) > 4:
-	maxdate = datetime.strptime(sys.argv[4], "%Y-%m-%d") #parser.parse(sys.argv[4])
+	maxdate = sys.argv[4]
 
 
 #This is an aggregate query.
 querystring = """
 {
   "aggregate": {
-    "entity": {"type": "Company", 
-		"attributes": {
-			"name": "tickers",
-			"string": []
-		}
-     },
+    "entity": {"id": [] },
     "document": {"published": {"min": "", "max": ""}},
-    "key": "tickers"
+    "name": "daily_330pm"
   },
   
   "output": {
@@ -89,33 +84,23 @@ outfields = ["count", "momentum", "positive", "negative"]
 qdict = json.loads(querystring)
 
 #Set the ticker list to pull and set the output fields in the query dict.
-qdict["aggregate"]["entity"]["attributes"]["string"] = tickerlist
+idlist = recfut.lookup_ids(tickerlist, token)
+qdict["aggregate"]["entity"]["id"] = idlist.keys()
 qdict["output"]["fields"] = outfields
 qdict["token"] = token
-
 
 #Iterate a single date at a time. Send some status output to stderr. We handle output of first
 #iteration slightly differently. If we get an error for a particular date, display an error
 #message but continue running.
 run = False
 
-for single_date in recfut.daterange(mindate, maxdate, inclusive=True):
-	print >>sys.stderr, "Running date " + single_date.strftime("%Y-%m-%d")
-	
-	qdict["aggregate"]["document"]["published"]["min"] = unicode(single_date.strftime("%Y-%m-%d"))
-	qdict["aggregate"]["document"]["published"]["max"] = unicode(single_date.strftime("%Y-%m-%d"))	
-	#If we receive an error, send it to STDERR, but continue anyway.
-	res = recfut.query(q=json.dumps(qdict))
-	if res["status"] == "FAILURE":
-		print >>sys.stderr, res
-		continue
-	
-	if len(res["aggregates"].split('\n')) < 3:
-		continue
-	
-	if run:
-		print '\n'.join(res["aggregates"].split('\n')[1:]),
-	else:
-		print '\n'.join(res["aggregates"].split('\n')),
-	run = True
+qdict["aggregate"]["document"]["published"]["min"] = mindate
+qdict["aggregate"]["document"]["published"]["max"] = maxdate
+#If we receive an error, send it to STDERR, but continue anyway.
+res = recfut.query(q=json.dumps(qdict))
+if res["status"] == "FAILURE":
+	print >>sys.stderr, res
 
+print "Ticker,"+res["aggregates"].split('\n')[0]
+for r in res["aggregates"].split('\n')[1:-1]:
+        print ",".join([idlist[r.split(',')[0]],r])
