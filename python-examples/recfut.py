@@ -41,7 +41,7 @@ def query(q, usecompression=True):
 
 		if usecompression:
 			url = url + '&compress=1'
-			
+
 		for i in range(3):
 			try:
 				data = urllib.urlopen(url % urllib.urlencode({"q":q}))
@@ -55,9 +55,13 @@ def query(q, usecompression=True):
 			except:
 				print >>sys.stderr, "Retrying failed API call."
 				time.sleep(1)
-				
-        #print data
-		return json.loads(data)
+
+                res = json.loads(data)
+
+                if res['status'] != "SUCCESS":
+                        print >>sys.stderr, "Error",str(res['errors'])
+
+		return res
 	except Exception, e:
 		print str(e)
 		return {'status': 'FAILURE', 'errors': str(e)}
