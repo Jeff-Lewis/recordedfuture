@@ -1,14 +1,14 @@
-import json, urllib, recfut, sys
+import json, urllib, recfut, sys, os
 
 def generate_sentiment_sparkline(ticker, from_date, to_date, token):
     #Do an RF entity lookup
     eid = recfut.lookup_id(ticker, token)
 
     #Next, do an aggregate_raw query on that entity ID.
-    aggquerystring = '{"aggregate_raw":{},"output":{"fields":["positive","negative"]}}'
+    aggquerystring = '{"aggregate":{},"output":{"fields":["positive","negative"]}}'
     query = json.loads(aggquerystring)
     query["token"] = token
-    query["aggregate_raw"] = {"entity":{"id":eid}, "document":{"published":{"min":from_date,"max":to_date}}}
+    query["aggregate"] = {"entity":{"id":eid}, "document":{"published":{"min":from_date,"max":to_date}}, "name":"daily_330pm"}
     res = recfut.query(json.dumps(query))
 
     #Grab our data from the result object.
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     ticker = "AAPL"
     from_date = "2010-05-21"
     to_date = "2010-11-21"
-    token = "MYTOKEN"
+    token = os.environ['RFTOKEN']
 
     val = generate_sentiment_sparkline(ticker, from_date, to_date, token)
 
