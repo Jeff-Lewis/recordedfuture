@@ -40,12 +40,17 @@ def build_query(options, args):
   
     if options.idfile:
       ids = [translate_id(i.strip()) for i in open(options.idfile).readlines()]
-      if qtype in query:
-        if 'attributes' not in query[qtype]:
-          query[qtype]['attributes'] = {}
-        if 'entity' not in query[qtype]['attributes']:
-          query[qtype]['attributes']['entity'] = {}
-        query[qtype]['attributes']['entity']['id'] = ids 
+      if qtype == "instance":  
+        if qtype in query:
+          if 'attributes' not in query[qtype]:
+            query[qtype]['attributes'] = {}
+          if 'entity' not in query[qtype]['attributes']:
+            query[qtype]['attributes']['entity'] = {}
+          query[qtype]['attributes']['entity']['id'] = ids 
+      if qtype == "aggregate":
+        if "entity" not in query[qtype]:
+          query[qtype]['entity'] = {}
+        query[qtype]['entity']['id'] = ids
     
     if options.sourcefile:
       ids = [translate_id(i.strip()) for i in open(options.sourcefile).readlines()]
