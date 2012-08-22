@@ -32,35 +32,40 @@ def build_query(options, args):
   
     if options.token:
       query['token'] = options.token
+      
+    if 'aggregate' in query:
+      qtype = 'aggregate'
+    else:
+      qtype = 'instance'
   
     if options.idfile:
       ids = [translate_id(i.strip()) for i in open(options.idfile).readlines()]
-      if 'instance' in query:
-        if 'attributes' not in query['instance']:
-          query['instance']['attributes'] = {}
-        if 'entity' not in query['instance']['attributes']:
-          query['instance']['attributes']['entity'] = {}
-        query['instance']['attributes']['entity']['id'] = ids 
+      if qtype in query:
+        if 'attributes' not in query[qtype]:
+          query[qtype]['attributes'] = {}
+        if 'entity' not in query[qtype]['attributes']:
+          query[qtype]['attributes']['entity'] = {}
+        query[qtype]['attributes']['entity']['id'] = ids 
     
     if options.sourcefile:
       ids = [translate_id(i.strip()) for i in open(options.sourcefile).readlines()]
-      if 'instance' in query:
-        if 'document' not in query['instance']:
-          query['instance']['document'] = {}
-        if 'source' not in query['instance']['document']:
-          query['instance']['document']['source'] = {}
-        query['instance']['document']['source']['id'] = ids   
+      if qtype in query:
+        if 'document' not in query[qtype]:
+          query[qtype]['document'] = {}
+        if 'source' not in query[qtype]['document']:
+          query[qtype]['document']['source'] = {}
+        query[qtype]['document']['source']['id'] = ids   
   
     if options.min:
-      if 'instance' in query:
-        if 'document' not in query['instance']:
-          query['instance']['document'] = {}
-        if 'published' not in query['instance']['document']:
-          query['instance']['document']['published'] = {}
-        query['instance']['document']['published']['min'] = options.min
+      if qtype in query:
+        if 'document' not in query[qtype]:
+          query[qtype]['document'] = {}
+        if 'published' not in query[qtype]['document']:
+          query[qtype]['document']['published'] = {}
+        query[qtype]['document']['published']['min'] = options.min
 
     if options.max:
-      query['instance']['document']['published']['max'] = options.max
+      query[qtype]['document']['published']['max'] = options.max
       
   except Exception, e:
     print >>sys.stderr, "Error parsing options:", e
@@ -89,17 +94,22 @@ def main():
              'document.sourceId.country','fragment','attributes']
   
   out = csv.DictWriter(sys.stdout, output_columns, extrasaction='ignore')
-
-  if options.header:
-    out.writerow(dict(zip(output_columns, output_columns)))
   
-  for res in page_pull(query):
-    for i in res['instances']:
-      i['positive'] = i.get('attributes', {}).get('positive',0.0)
-      i['negative'] = i.get('attributes', {}).get('negative',0.0)
-      out.writerow(encode_instance(flatten_instance(i, res['entities'], substitute_fields)))
-    if not options.page:
-      break
+  if json.loads(query).get('aggregate'):
+      res = run_query(query)
+      print res
+
+  else:
+    if options.header:
+      out.writerow(dict(zip(output_columns, output_columns)))
+
+    for res in page_pull(query):
+      for i in res['instances']:
+        i['positive'] = i.get('attributes', {}).get('positive',0.0)
+        i['negative'] = i.get('attributes', {}).get('negative',0.0)
+        out.writerow(encode_instance(flatten_instance(i, res['entities'], substitute_fields)))
+      if not options.page:
+        break
       
 if __name__ == "__main__":
   main()
