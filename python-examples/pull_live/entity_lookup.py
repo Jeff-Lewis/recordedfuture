@@ -61,7 +61,7 @@ def build_query(options, args):
   except Exception, e:
     print >>sys.stderr, "Error parsing options:", e
   
-  print >>sys.stderr, json.dumps(query, indent=2)
+  #print >>sys.stderr, json.dumps(query, indent=2)
   return json.dumps(query)
 
 def main():
