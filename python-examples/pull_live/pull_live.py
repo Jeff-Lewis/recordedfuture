@@ -100,7 +100,7 @@ def main():
   
   out = csv.DictWriter(sys.stdout, output_columns, extrasaction='ignore')
   
-  if json.loads(query).get('aggregate'):
+  if json.loads(query).get('aggregate') or json.loads(query).get('output',{}).get('count'):
       res = run_query(query)
       print res
 
