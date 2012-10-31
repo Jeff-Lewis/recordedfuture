@@ -21,10 +21,23 @@ def parse_arguments():
   parser.add_option("-p", "--page", action="store_true", dest="page", help="Turn paging of results on.")
   parser.add_option("-n", "--no-page", action="store_false", dest="page", help="Turn paging of results off.")
   parser.add_option("--no-header", action="store_false", dest="header", default=True, help="Turn header output off.")
+  parser.add_option("-e", "--entity_file", dest="entityfile", default=False, help="Store entities returned by query in file. (Not available for aggregate queries)")
   
   (options, args) = parser.parse_args()
   return options, args
-
+  
+def pack_entity_attributes(entities, entity_headers):
+  for k,e in entities.items():
+    e['attributes'] = {}
+    e['id'] = k
+    for a in e:
+      if a not in entity_headers:
+        e['attributes'][a] = e[a]
+    for a in e['attributes']:
+      del e[a]
+  
+  return entities.values()
+      
 
 def build_query(options, args):
   try:
@@ -86,6 +99,7 @@ def encode_instance(i):
   return i
 
 
+
 def main():
   options, args = parse_arguments()
   query = build_query(options, args)
@@ -97,6 +111,7 @@ def main():
              'document.sourceId.id','document.sourceId.name',
              'document.sourceId.media_type','document.sourceId.topic',
              'document.sourceId.country','fragment','attributes']
+  entity_columns = ['id','name','hits','type','momentum','attributes']
   
   out = csv.DictWriter(sys.stdout, output_columns, extrasaction='ignore')
   
@@ -107,12 +122,23 @@ def main():
   else:
     if options.header:
       out.writerow(dict(zip(output_columns, output_columns)))
+    if options.entityfile:
+      entityout = csv.DictWriter(open(options.entityfile, 'w'), entity_columns, extrasaction='ignore')
+      entityout.writerow(dict(zip(entity_columns, entity_columns)))
 
     for res in page_pull(query):
       for i in res['instances']:
         i['positive'] = i.get('attributes', {}).get('positive',0.0)
         i['negative'] = i.get('attributes', {}).get('negative',0.0)
         out.writerow(encode_instance(flatten_instance(i, res['entities'], substitute_fields)))
+        
+      if options.entityfile:
+          entities = pack_entity_attributes(res['entities'], entity_columns)
+          print json.dumps(entities, indent=2)
+          for e in entities:
+            #Here we reuse the instance formatting code to format entities for output.
+            entityout.writerow(encode_instance(flatten_instance(e, res['entities'], [])))
+            
       if not options.page:
         break
       
