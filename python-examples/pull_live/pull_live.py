@@ -22,6 +22,7 @@ def parse_arguments():
   parser.add_option("-n", "--no-page", action="store_false", dest="page", help="Turn paging of results off.")
   parser.add_option("--no-header", action="store_false", dest="header", default=True, help="Turn header output off.")
   parser.add_option("-e", "--entity_file", dest="entityfile", default=False, help="Store entities returned by query in file. (Not available for aggregate queries)")
+  parser.add_option("-f", "--freetext_file", dest="freetextfile", default=False, help="File that contains freetext strings to search for - one per line.")
   
   (options, args) = parser.parse_args()
   return options, args
@@ -42,15 +43,15 @@ def pack_entity_attributes(entities, entity_headers):
 def build_query(options, args):
   try:
     query = json.loads(open(args[0]).read())
-  
+
     if options.token:
       query['token'] = options.token
-      
+
     if 'aggregate' in query:
       qtype = 'aggregate'
     else:
       qtype = 'instance'
-  
+
     if options.idfile:
       ids = [translate_id(i.strip()) for i in open(options.idfile).readlines()]
       if qtype == "instance":  
@@ -64,7 +65,7 @@ def build_query(options, args):
         if "entity" not in query[qtype]:
           query[qtype]['entity'] = {}
         query[qtype]['entity']['id'] = ids
-    
+
     if options.sourcefile:
       ids = [translate_id(i.strip()) for i in open(options.sourcefile).readlines()]
       if qtype in query:
@@ -73,7 +74,7 @@ def build_query(options, args):
         if 'source' not in query[qtype]['document']:
           query[qtype]['document']['source'] = {}
         query[qtype]['document']['source']['id'] = ids   
-  
+
     if options.min:
       if qtype in query:
         if 'document' not in query[qtype]:
@@ -84,7 +85,11 @@ def build_query(options, args):
 
     if options.max:
       query[qtype]['document']['published']['max'] = options.max
-      
+
+    if options.freetextfile:
+      query[qtype]['freetext'] = [[l.strip() for l in open(options.freetextfile).readlines()]]
+      print query
+
   except Exception, e:
     print >>sys.stderr, "Error parsing options:", e
   
