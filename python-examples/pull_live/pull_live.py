@@ -88,7 +88,6 @@ def build_query(options, args):
 
     if options.freetextfile:
       query[qtype]['freetext'] = [[l.strip() for l in open(options.freetextfile).readlines()]]
-      print query
 
   except Exception, e:
     print >>sys.stderr, "Error parsing options:", e
