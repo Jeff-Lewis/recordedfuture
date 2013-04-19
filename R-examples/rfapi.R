@@ -96,11 +96,11 @@ bloomberg_lookup <- function(token) {
 }
 
 
-run_agg_query_bbg <- function(from, to, token) {
+run_agg_query_bbg <- function(from, to, token, name="attention_by_half_hour") {
     rf_bbgidmap <- bloomberg_lookup(token)
 
     #Execute query and merge in ticker info.
-    resdf <- run_agg_query(aggregateQuery, token, rf_bbgidmap$Entity, from, to)
+    resdf <- run_agg_query(aggregateQuery, token, rf_bbgidmap$Entity, from, to, name)
     if(class(resdf) == "data.frame") {
         compdf <- merge(rf_bbgidmap, resdf, by='Entity')
     
