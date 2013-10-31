@@ -36,7 +36,7 @@ def translate_id_to_int(i):
 
 def main():
     for l in fileinput.input():
-        print b64decode(l)
+        print str(b64decode(l.split(",")[0]))+","+l.split(",")[1].strip()
 
 if __name__ == "__main__":
     main()

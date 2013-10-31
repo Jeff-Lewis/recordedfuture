@@ -138,7 +138,7 @@ def main():
         
       if options.entityfile:
           entities = pack_entity_attributes(res['entities'], entity_columns)
-          print json.dumps(entities, indent=2)
+          #print json.dumps(entities, indent=2)
           for e in entities:
             #Here we reuse the instance formatting code to format entities for output.
             entityout.writerow(encode_instance(flatten_instance(e, res['entities'], [])))

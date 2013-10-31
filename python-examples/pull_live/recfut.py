@@ -66,12 +66,12 @@ def flatten_dict(d):
   return res
 
 
-def parse_value(val,entities):
+def parse_value(val,entities, substitute=True):
   """
   Parse either a value or list of values and return combined results free
   of tab and newline characters.
   """
-  if unicode(val) in entities and entities[unicode(val)].get('name'):
+  if substitute and unicode(val) in entities and entities[unicode(val)].get('name'):
     val=entities[unicode(val)]['name']
     val=''.join([c for c in val if ord(c)<128])
     return val.replace('"', '').replace('\r',' ').replace('\n',' ').replace('\t',' ').strip()
@@ -82,13 +82,13 @@ def parse_value(val,entities):
     return val
 
 
-def dict_to_parsed_string(d, e):
+def dict_to_parsed_string(d, e, s=True):
   res = []
   for k,val in d.items():
     if isinstance(val, list):
-      res.append(k+":"+','.join([unicode(parse_value(v,e)) for v in val]))
+      res.append(k+":"+','.join([unicode(parse_value(v,e,s)) for v in val]))
     else:
-      res.append(k+":"+unicode(parse_value(val,e)))
+      res.append(k+":"+unicode(parse_value(val,e,s)))
   return '||'.join(res)
 
 
@@ -98,15 +98,15 @@ def substitute_entities(i, e, fields):
   return i
 
 
-def flatten_attributes(i, e):
+def flatten_attributes(i, e, substitute=True):
   try:
-    return dict_to_parsed_string(i['attributes'], e)
+    return dict_to_parsed_string(i['attributes'], e, substitute)
   except:
     return None
 
 
 def flatten_instance(i, e, fields):
-  i['attributes'] = flatten_attributes(i, e)
+  i['attributes'] = flatten_attributes(i, e, 'attributes' in fields)
   i = flatten_dict(i)
   i = substitute_entities(i, e, fields)
   return i
