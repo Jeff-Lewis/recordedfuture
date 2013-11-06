@@ -1,5 +1,5 @@
 # rfjsontotsv.py
-# v1.1
+# v1.2
 # Usage: python rfjsontotsv.py 
 # optional --instance_input_file
 # optional --entity_input_file
@@ -96,11 +96,12 @@ def setDocumentSource(v):
 
 def setEntities(v):
   global entities
-  entities = ""
+  entities = {}
   for i in v:
     if i != None:
-      i = translateEntities(i)
-      entities = i + ";" + entities
+      j = mapEntities(i)
+      entities[i] = j
+      
   return entities
   
 def setTopics(v):
@@ -141,10 +142,6 @@ def translateSource(s):
 
   s = mapSource(entities_dict, s)
 
-  return s
-
-def translateEntities(s):
-  s = mapEntities(entities_dict, s)
   return s
 
 def translateTopic(s):
@@ -247,12 +244,11 @@ def createEntitiesDict(entity_input_file, entity_output_file):
   entities_data = open(entity_input_file)
   entities_dict = {}
   fid = codecs.open(entity_output_file, 'wb', 'utf-8')
-#  fid.write("Entity ID" + "\t" + "Entity Type" + "\t" + "Entity Name" + "\n")
+
   for j in entities_data:
     jdata = json.loads(j)
     entities_dict[jdata['id']] = jdata['attributes']['name']
-#    fid.write(jdata['id'])
-#    fid.write("\t")
+
     fid.write(jdata['type'])
     fid.write("\t")
     fid.write(jdata['attributes']['name'])
@@ -260,6 +256,31 @@ def createEntitiesDict(entity_input_file, entity_output_file):
   fid.close()
   entities_data.close()
   return entities_dict
+  
+def createEntitiesTypeDict(entity_input_file, entity_output_file):
+  entities_data = open(entity_input_file)
+  entity_types_dict = {}
+
+  for j in entities_data:
+    jdata = json.loads(j)
+    #if jdata['type'] not in entity_types_dict.values():
+      #print jdata['type']
+    entity_types_dict[jdata['id']] = jdata['type']
+
+  entities_data.close()
+  return entity_types_dict
+
+def createEntitiesTypeUniqueDict(entity_input_file, entity_output_file):
+  entities_data = open(entity_input_file)
+  entity_types_dict = {}
+
+  for j in entities_data:
+    jdata = json.loads(j)
+    if jdata['type'] not in entity_types_dict.values():
+      entity_types_dict[jdata['id']] = jdata['type']
+
+  entities_data.close()
+  return entity_types_dict
 
 def mapSource(entities_dict, s):
   try:
@@ -268,12 +289,13 @@ def mapSource(entities_dict, s):
     res = "None"
   return res
 
-def mapEntities(entities_dict, s):
+def mapEntities(s):
   try:
-    res = entities_dict[s]
+    res  = entities_dict[s]
   except:
     res = "None"
   return res
+
 
 if __name__ == "__main__":
   parser = OptionParser()
@@ -300,112 +322,190 @@ if __name__ == "__main__":
     entity_output_file = 'entities_1.tsv'
 
   entities_dict = createEntitiesDict(entity_input_file, entity_output_file)
-
+  entities_type_dict = createEntitiesTypeDict(entity_input_file, entity_output_file)
+  entities_type_unique_dict = createEntitiesTypeUniqueDict(entity_input_file, entity_output_file)
+  
   instances_data = open(instance_input_file)
   fid = codecs.open(instance_output_file, 'wb', 'utf-8')
-  fid.write("Instance ID" + "\t" + "Event Type" + "\t" + "Fragment" + "\t" + "Start" + "\t" + "Stop" + "\t" + "Published" + "\t" + "Document Title" + "\t" + "Document ID"  "\t" + "Document Category" + "\t" + "Document Source" + "\t" + "Document URL" + "\t" + "Event ID" + "\t" "Authors" + "\t" + "Sentiment Positive" + "\t" + "Tone Violence" + "\t" + "Tone Activism" + "\t" + "Sentiment Negative" + "\t" + "Entities" + "\t" "Topics" + "\t" + "Language" + "\n")
+   
+  header = "Instance ID" + "\t" + "Event Type" + "\t" + "Fragment" + "\t" + "Start" + "\t" + "Stop" + "\t" + "Published" + "\t" + "Document Title" + "\t" + "Document ID"  "\t" + "Document Category" + "\t" + "Document Source" + "\t" + "Document URL" + "\t" + "Event ID" + "\t" "Authors" + "\t" + "Sentiment Positive" + "\t" + "Tone Violence" + "\t" + "Tone Activism" + "\t" + "Sentiment Negative" + "\t"
+    
+  for i in sorted(entities_type_unique_dict):
+    header = header + entities_type_unique_dict[i]
+    header = header + "\t"
+
+  header = header + "\n"
+
+  fid.write(header)
+    
+  
+    
   for j in instances_data:
     jdata = json.loads(j)
     printKeyVals(jdata)
+    row = ""
+    
     try:
-      fid.write(id)
+      row = row + id
+      #fid.write(id)
     except:
       pass
-    fid.write("\t")
+    #fid.write("\t")
+    row = row + "\t"
     try:
-      fid.write(type)
+      row = row + type
+      #fid.write(type)
     except:
       pass
-    fid.write("\t")
+    #fid.write("\t")
+    row = row + "\t"
     try:
-      fid.write(event_fragment)
+      row = row + event_fragment
+      #fid.write(event_fragment)
     except:
       pass
-    fid.write("\t")
+    #fid.write("\t")
+    row = row + "\t"
     try:
-      fid.write(start)
+      row = row + start
+      #fid.write(start)
     except:
       pass
-    fid.write("\t")
+    #fid.write("\t")
+    row = row + "\t"
     try:
-      fid.write(stop)
+      row = row + stop
+      #fid.write(stop)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(published)
+      row = row + published
+      #fid.write(published)
     except:
       pass
-    fid.write("\t")
+    #fid.write("\t")
+    row = row + "\t"
     try:
-      fid.write(document_title)
+      row = row + document_title
+      #fid.write(document_title)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(document_id)
+      row = row + document_id
+      #fid.write(document_id)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"  
+    #fid.write("\t")
     try:
-      fid.write(document_category)
+      row = row + document_category
+      #fid.write(document_category)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(document_source)
+      row = row + document_source
+      #fid.write(document_source)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(document_url)
+      row = row + document_url
+      #fid.write(document_url)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(canonic_id)
+      row = row + canonic_id
+      #fid.write(canonic_id)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"  
+    #fid.write("\t")
     try:
-      fid.write(authors)
+      row = row + authors
+      #fid.write(authors)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(general_positive)
+      row = row + general_positive
+      #fid.write(general_positive)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(violence)
+      row = row + violence
+      #fid.write(violence)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(activism)
+      row = row + activism
+      #fid.write(activism)
     except:
       pass
-    fid.write("\t")
+    row = row + "\t"
+    #fid.write("\t")
     try:
-      fid.write(general_negative)
+      row = row + general_negative
+      #fid.write(general_negative)
     except:
       pass
-    fid.write("\t")
+    #fid.write("\t")
     try:
-      fid.write(entities)
+      for i in sorted(entities_type_unique_dict):
+        list = ""
+        for j in sorted(entities_type_dict):
+          for k in entities:
+            if (j == k) & (entities_type_dict[j] == entities_type_unique_dict[i]):
+              #list = entities[k] + ";" + list
+              list = ';'.join(entities[k])
+        if list != "":
+          #fid.write(list + "\t")
+          row = row + list + "\t"
+        else:
+          row = row + "\t"
+          #fid.write("\t")
     except:
       pass
-    fid.write("\t")
-    try:
-      fid.write(topics)
-    except:
-      pass
-    fid.write("\t")
-    try:
-      fid.write(language)
-    except:
-      pass
-    fid.write("\n")
+      
+    #for j in sorted(entities_type_dict):
+    #  for i in entities:
+    #      if (i == j) & (entities_type_dict[j] == entities_type_unique_dict[k]):  
+    #        fid.write(list[entities_type_dict[j]] + "\t")
+      
+      
+    #      else:
+    #        fid.write("\t")
+      #fid.write("\n")
+          #else:
+          #  print entities_type_dict[j] + "\n"
+          #fid.write("Entities:" + i + " " + "Entities Type:" + j + "\t")
+    #except:
+    #  pass
+    #fid.write("\t")
+    #try:
+    #  fid.write(topics)
+    #except:
+    #  pass
+    #fid.write("\t")
+    #try:
+    #  fid.write(language)
+    #except:
+    #  pass
+    print row
+    fid.write(row + "\n")
+    #fid.write("\n")
   fid.close();
   instances_data.close()
