@@ -504,7 +504,6 @@ if __name__ == "__main__":
     #  fid.write(language)
     #except:
     #  pass
-    print row
     fid.write(row + "\n")
     #fid.write("\n")
   fid.close();
