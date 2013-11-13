@@ -263,8 +263,6 @@ def createEntitiesTypeDict(entity_input_file, entity_output_file):
 
   for j in entities_data:
     jdata = json.loads(j)
-    #if jdata['type'] not in entity_types_dict.values():
-      #print jdata['type']
     entity_types_dict[jdata['id']] = jdata['type']
 
   entities_data.close()
@@ -327,184 +325,105 @@ if __name__ == "__main__":
   
   instances_data = open(instance_input_file)
   fid = codecs.open(instance_output_file, 'wb', 'utf-8')
-   
+  
   header = "Instance ID" + "\t" + "Event Type" + "\t" + "Fragment" + "\t" + "Start" + "\t" + "Stop" + "\t" + "Published" + "\t" + "Document Title" + "\t" + "Document ID"  "\t" + "Document Category" + "\t" + "Document Source" + "\t" + "Document URL" + "\t" + "Event ID" + "\t" "Authors" + "\t" + "Sentiment Positive" + "\t" + "Tone Violence" + "\t" + "Tone Activism" + "\t" + "Sentiment Negative" + "\t"
     
   for i in sorted(entities_type_unique_dict):
-    header = header + entities_type_unique_dict[i]
-    header = header + "\t"
+    header = header + entities_type_unique_dict[i] + "\t"
 
   header = header + "\n"
 
   fid.write(header)
     
-  
     
   for j in instances_data:
     jdata = json.loads(j)
     printKeyVals(jdata)
-    row = ""
     
+    line = ""
     try:
-      row = row + id
-      #fid.write(id)
+      line = line + id + "\t"
     except:
       pass
-    #fid.write("\t")
-    row = row + "\t"
     try:
-      row = row + type
-      #fid.write(type)
+      line = line + type + "\t"
     except:
       pass
-    #fid.write("\t")
-    row = row + "\t"
     try:
-      row = row + event_fragment
-      #fid.write(event_fragment)
+      line = line + event_fragment + "\t"
     except:
       pass
-    #fid.write("\t")
-    row = row + "\t"
     try:
-      row = row + start
-      #fid.write(start)
+      line = line + start + "\t"
     except:
       pass
-    #fid.write("\t")
-    row = row + "\t"
     try:
-      row = row + stop
-      #fid.write(stop)
+      line = line + stop + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + published
-      #fid.write(published)
+      line = line + published + "\t"
     except:
       pass
-    #fid.write("\t")
-    row = row + "\t"
     try:
-      row = row + document_title
-      #fid.write(document_title)
+      line = line + document_title + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + document_id
-      #fid.write(document_id)
+      line = line + document_id + "\t"
     except:
       pass
-    row = row + "\t"  
-    #fid.write("\t")
     try:
-      row = row + document_category
-      #fid.write(document_category)
+      line = line + document_category + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + document_source
-      #fid.write(document_source)
+      line = line + document_source + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + document_url
-      #fid.write(document_url)
+      line = line + document_url + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + canonic_id
-      #fid.write(canonic_id)
+      line = line + canonic_id + "\t"
     except:
       pass
-    row = row + "\t"  
-    #fid.write("\t")
     try:
-      row = row + authors
-      #fid.write(authors)
+      line = line + authors + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + general_positive
-      #fid.write(general_positive)
+      line = line + general_positive + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + violence
-      #fid.write(violence)
+      line = line + violence + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + activism
-      #fid.write(activism)
+      line = line + activism + "\t"
     except:
       pass
-    row = row + "\t"
-    #fid.write("\t")
     try:
-      row = row + general_negative
-      #fid.write(general_negative)
+      line = line + general_negative + "\t"
     except:
       pass
-    #fid.write("\t")
     try:
       for i in sorted(entities_type_unique_dict):
         list = ""
         for j in sorted(entities_type_dict):
           for k in entities:
             if (j == k) & (entities_type_dict[j] == entities_type_unique_dict[i]):
-              #list = entities[k] + ";" + list
-              list = ';'.join(entities[k])
+              list = entities[k] + ";" + list
         if list != "":
-          #fid.write(list + "\t")
-          row = row + list + "\t"
+          line = line + list + "\t"
         else:
-          row = row + "\t"
-          #fid.write("\t")
+          line = line + "\t"
     except:
       pass
-      
-    #for j in sorted(entities_type_dict):
-    #  for i in entities:
-    #      if (i == j) & (entities_type_dict[j] == entities_type_unique_dict[k]):  
-    #        fid.write(list[entities_type_dict[j]] + "\t")
-      
-      
-    #      else:
-    #        fid.write("\t")
-      #fid.write("\n")
-          #else:
-          #  print entities_type_dict[j] + "\n"
-          #fid.write("Entities:" + i + " " + "Entities Type:" + j + "\t")
-    #except:
-    #  pass
-    #fid.write("\t")
-    #try:
-    #  fid.write(topics)
-    #except:
-    #  pass
-    #fid.write("\t")
-    #try:
-    #  fid.write(language)
-    #except:
-    #  pass
-    fid.write(row + "\n")
-    #fid.write("\n")
+    
+    fid.write(line)  
+    fid.write("\n")
   fid.close();
   instances_data.close()
