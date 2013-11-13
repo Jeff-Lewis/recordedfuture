@@ -1,5 +1,5 @@
 # rfjsontotsv.py
-# v1.2
+# v1.3
 # Usage: python rfjsontotsv.py 
 # optional --instance_input_file
 # optional --entity_input_file
@@ -347,122 +347,89 @@ if __name__ == "__main__":
     
     try:
       row = row + id
-      #fid.write(id)
     except:
       pass
-    #fid.write("\t")
     row = row + "\t"
     try:
       row = row + type
-      #fid.write(type)
     except:
       pass
-    #fid.write("\t")
     row = row + "\t"
     try:
       row = row + event_fragment
-      #fid.write(event_fragment)
     except:
       pass
-    #fid.write("\t")
     row = row + "\t"
     try:
       row = row + start
-      #fid.write(start)
     except:
       pass
-    #fid.write("\t")
     row = row + "\t"
     try:
       row = row + stop
-      #fid.write(stop)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + published
-      #fid.write(published)
     except:
       pass
-    #fid.write("\t")
     row = row + "\t"
     try:
       row = row + document_title
-      #fid.write(document_title)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + document_id
-      #fid.write(document_id)
     except:
       pass
     row = row + "\t"  
-    #fid.write("\t")
     try:
       row = row + document_category
-      #fid.write(document_category)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + document_source
-      #fid.write(document_source)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + document_url
-      #fid.write(document_url)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + canonic_id
       #fid.write(canonic_id)
     except:
       pass
     row = row + "\t"  
-    #fid.write("\t")
     try:
       row = row + authors
-      #fid.write(authors)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + general_positive
-      #fid.write(general_positive)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + violence
-      #fid.write(violence)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + activism
-      #fid.write(activism)
     except:
       pass
     row = row + "\t"
-    #fid.write("\t")
     try:
       row = row + general_negative
-      #fid.write(general_negative)
     except:
       pass
-    #fid.write("\t")
     try:
       for i in sorted(entities_type_unique_dict):
         list = ""
@@ -472,39 +439,12 @@ if __name__ == "__main__":
               #list = entities[k] + ";" + list
               list = ';'.join(entities[k])
         if list != "":
-          #fid.write(list + "\t")
           row = row + list + "\t"
         else:
           row = row + "\t"
-          #fid.write("\t")
     except:
       pass
       
-    #for j in sorted(entities_type_dict):
-    #  for i in entities:
-    #      if (i == j) & (entities_type_dict[j] == entities_type_unique_dict[k]):  
-    #        fid.write(list[entities_type_dict[j]] + "\t")
-      
-      
-    #      else:
-    #        fid.write("\t")
-      #fid.write("\n")
-          #else:
-          #  print entities_type_dict[j] + "\n"
-          #fid.write("Entities:" + i + " " + "Entities Type:" + j + "\t")
-    #except:
-    #  pass
-    #fid.write("\t")
-    #try:
-    #  fid.write(topics)
-    #except:
-    #  pass
-    #fid.write("\t")
-    #try:
-    #  fid.write(language)
-    #except:
-    #  pass
     fid.write(row + "\n")
-    #fid.write("\n")
   fid.close();
   instances_data.close()
