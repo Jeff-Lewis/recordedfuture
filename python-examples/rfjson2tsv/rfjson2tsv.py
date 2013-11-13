@@ -1,5 +1,5 @@
 # rfjsontotsv.py
-# v1.2
+# v1.3
 # Usage: python rfjsontotsv.py 
 # optional --instance_input_file
 # optional --entity_input_file
@@ -52,6 +52,7 @@ def setAuthors(v):
   authors = ""
   for i in v:
     authors = i + ";" + authors
+  authors = authors[:-1] 
   return authors
 
 def setPublished(v):
@@ -110,6 +111,7 @@ def setTopics(v):
   for i in v:
     i = translateTopic(i)
     topics = i + ";" + topics
+  topics = topics[:-1]
   return topics
 
 def setStart(v):
@@ -416,6 +418,7 @@ if __name__ == "__main__":
           for k in entities:
             if (j == k) & (entities_type_dict[j] == entities_type_unique_dict[i]):
               list = entities[k] + ";" + list
+        list = list[:-1]
         if list != "":
           line = line + list + "\t"
         else:
