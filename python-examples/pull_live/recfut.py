@@ -4,7 +4,7 @@ from StringIO import StringIO
 
 def run_query(q):
   try:
-    url = 'http://api.recordedfuture.com/query/'
+    url = 'https://api.recordedfuture.com/query/'
     #url = 'http://www-5044.recfut.net:9393/rfq/'
 
     for i in range(3):
