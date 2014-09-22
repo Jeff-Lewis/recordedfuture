@@ -1,3 +1,9 @@
+'''
+Generates tables of top entities from specified queries as
+in the Recorded Future Cyber Daily.
+
+Contact: support@recordedfuture.com
+'''
 import argparse
 import collections
 import csv
