@@ -1,0 +1,35 @@
+{
+  "comment":"Threat Actors",
+  "instance": {
+    "type": "CyberAttack",
+    "attributes": [
+        [
+            {
+                "name": "attacker",
+                "entity": {
+                    "id": "JW2OHE"
+                }
+            }
+        ]
+    ],
+    "document": {
+      "published": {
+        "min": "",
+        "max": ""
+      }
+    }
+  },
+  "output": {
+    "count": {
+      "axis": [
+        {
+          "name":"attributes.attacker",
+		  "type": ["Organization", "Person"]
+        }
+      ],
+      "values": [
+        "documents"
+      ]
+    }
+  }
+}

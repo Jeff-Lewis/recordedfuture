@@ -1,0 +1,66 @@
+{
+    "comment": "Suspicious IP Addresses",
+    "instance": {
+        "type": "Event",
+        "attributes": [
+            [
+                {
+                    "name": "entities",
+                    "entity": {
+                        "type": "IpAddress"
+                    }
+                }
+            ],
+            [
+                {
+                    "name": "Event.event_fragment",
+                    "string": [
+                        "compromised",
+                        "malicious",
+                        "suspected",
+                        "threat",
+                        "malware",
+                        "infected",
+                        "honeypot",
+                        "attacked from",
+                        "exploit",
+                        "attacks from",
+                        "bad HTTP request from",
+                        "attack detected",
+                        "attack deteted"
+                    ]
+                },
+                {
+                    "name": "entities",
+                    "entity": {
+                        "type": [
+                            "Malware",
+                            "MalwareSignature"
+                        ]
+                    }
+                }
+            ]
+        ],
+        "document": {
+            "published": {
+                "min": "",
+                "max": ""
+            }
+        }
+    },
+    "output": {
+        "count": {
+            "axis": [
+                {
+                    "name": "attributes.entities",
+                    "type": [
+                        "IpAddress"
+                    ]
+                }
+            ],
+            "values": [
+                "documents"
+            ]
+        }
+    }
+}

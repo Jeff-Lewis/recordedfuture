@@ -43,7 +43,7 @@ class RFAPI(object):
         url_q = urllib.urlencode({"q":json.dumps(q)})
 
         try:
-            data = urllib2.urlopen(urllib2.Request(self._url+url_q, None)).read()
+            data = urllib2.urlopen(self._url, data=url_q).read()
         except httplib.IncompleteRead as e:
             sys.stderr.write('Retrying...\nFailed query: {0}\nReturned partial result: {1}\n'.format(q, e.partial))
             if tries_left > 0:

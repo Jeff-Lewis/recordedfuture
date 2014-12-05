@@ -1,0 +1,32 @@
+{
+  "comment":"Vulnerabilities",
+  "instance": {
+    "type": "Event",
+    "attributes": [
+      {
+        "entity": {
+          "type": "CyberVulnerability"
+        }
+      }
+    ],
+    "document": {
+      "published": {
+        "min": "",
+        "max": ""
+      }
+    }
+  },
+  "output": {
+    "count": {
+      "axis": [
+        {
+          "name":"attributes.entities",
+          "type":["CyberVulnerability"]
+        }
+      ],
+      "values": [
+        "documents"
+      ]
+    }
+  }
+}

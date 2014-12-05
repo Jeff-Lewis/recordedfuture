@@ -1,14 +1,7 @@
 {
-  "comment": "Vulnerabilities",
+  "comment": "Cyber Operations",
   "instance": {
-    "type": "Event",
-    "attributes": [
-      {
-        "entity": {
-          "type": "CyberVulnerability"
-        }
-      }
-    ],
+    "type": "CyberAttack",
     "document": {
       "published": {
         "min": "",
@@ -21,7 +14,7 @@
       "axis": [
         {
           "name":"attributes.entities",
-          "type":["CyberVulnerability"]
+          "type":["Operation"]
         }
       ],
       "values": [
