@@ -152,11 +152,11 @@ class IOCEnricher(object):
         response : dict
             The enrichment package containing all keys requested by "mode" parameter.
         '''
-        print "Getting all references"
+        # print "Getting all references"
         refs, edetails = self._get_all_references()
-        print "Getting enrichment from references"
+        # print "Getting enrichment from references"
         self._get_enrichment(refs, edetails)
-        print "Getting URL and Score"
+        # print "Getting URL and Score"
         for ioc in self.response:
             ioc_resp = self.response[ioc]
             # Get RF URL
@@ -275,7 +275,7 @@ class IOCEnricher(object):
             self._safe_get_related_entities_from_frags(refs, edetails)
         # get related content at document scope
         if self.mode in ('debug', 'related') and self._RELATED_ENTITY_SCOPE == 'document':
-            print "Getting related content from documents"
+            # print "Getting related content from documents"
             docs = self._get_docs()
             self._safe_get_related_entities_from_docs(docs)
             
@@ -320,7 +320,7 @@ class IOCEnricher(object):
             rfids = [self.iocs[name] for name in names if self.iocs[name]]
             q['instance']['attributes'][0].append({"name": "entities",
                                                    "entity": {"id": rfids}})
-            print len(self.iocs.keys()),
+            # print len(self.iocs.keys()),
             for res in self.rfqapi.paged_query(q):
                 refs.extend([inst for inst in res['instances'] if inst['id'] not in seen_ids])
                 seen_ids.update([inst['id'] for inst in res['instances']])
@@ -358,9 +358,9 @@ class IOCEnricher(object):
         for ref in refs:
             related_ents = ref['attributes'].get('extended_entities', ref['attributes'].get('entities', []))
             entities_to_lookup.update([eid for eid in related_ents if eid not in edetails])
-        print "Updating entity resolution"
+        # print "Updating entity resolution"
         edetails.update(self._resolve_related_entities(list(entities_to_lookup)))
-        print "Updated related entities"
+        # print "Updated related entities"
         for ref in refs:
             fragment = ref['fragment'].lower()
             # get related entities from reference
@@ -375,7 +375,8 @@ class IOCEnricher(object):
                 ioc_resp = self.response[ioc]
                 for ent in filter(lambda eid: eid in edetails and eid != ioc_resp['RFID'], related_ents):
                     etype, name = edetails[ent]['type'], edetails[ent]['name']
-                    ioc_resp['Related' + etype].append(name)
+                    if name not in ioc_resp['Related' + etype]:
+                        ioc_resp['Related' + etype].append(name)
                     if 'Related' + etype + 'Count' in ioc_resp:
                         ioc_resp['Related' + etype + 'Count'] = len(ioc_resp['Related' + etype])
                 for etype in self._RELATED_ENTITY_TYPES:
