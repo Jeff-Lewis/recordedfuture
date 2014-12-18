@@ -377,20 +377,24 @@ class IOCEnricher(object):
                     etype, name = edetails[ent]['type'], edetails[ent]['name']
                     if name not in ioc_resp['Related' + etype]:
                         ioc_resp['Related' + etype].append(name)
-                    if 'Related' + etype + 'Count' in ioc_resp:
-                        ioc_resp['Related' + etype + 'Count'] = len(ioc_resp['Related' + etype])
-                for etype in self._RELATED_ENTITY_TYPES:
-                    if 'Related' + etype not in self.keys and 'Related' + etype in ioc_resp:
-                        del ioc_resp['Related' + etype]
+        for ioc in self.response:
+            ioc_resp = self.response[ioc]
+            for etype in self._RELATED_ENTITY_TYPES:
+                if 'Related' + etype + 'Count' in ioc_resp:
+                    ioc_resp['Related' + etype + 'Count'] = len(ioc_resp['Related' + etype])
+                if 'Related' + etype not in self.keys and 'Related' + etype in ioc_resp:
+                    del ioc_resp['Related' + etype]
 
     def _resolve_related_entities(self, eids):
         if len(eids) == 0:
             return {}
+        results = {}
         for ents in _chunks(eids, 1000):
             q = {"entity": {"id": ents,
                             "limit": 1001}}
             res = self.rfqapi.query(q)
-        return { eid: res['entity_details'][eid] for eid in res['entity_details'] if res['entity_details'][eid]['type'] in self._RELATED_ENTITY_TYPES }
+            results.update({ eid: res['entity_details'][eid] for eid in res['entity_details'] if res['entity_details'][eid]['type'] in self._RELATED_ENTITY_TYPES })
+        return results
 
     def _safe_get_related_entities_from_docs(self, docs):
         for docids in _chunks(docs, 1000):
@@ -410,14 +414,15 @@ class IOCEnricher(object):
                         name, unused, etype = rf_agg_name_parser(asp_name)
                         if name == ioc: continue
                         # update related counts
-                        ioc_resp['Related' + etype].append(name)
-                        if 'Related' + etype + 'Count' in ioc_resp:
-                            ioc_resp['Related' + etype + 'Count'] = len(ioc_resp['Related' + etype])
+                        if name not in ioc_resp['Related' + etype]:
+                            ioc_resp['Related' + etype].append(name)
         for ioc in self.response:
             ioc_resp = self.response[ioc]
             if 'DocumentIds' not in self.keys and 'DocumentIds' in ioc_resp:
                 del ioc_resp['DocumentIds']
             for etype in self._RELATED_ENTITY_TYPES:
+                if 'Related' + etype + 'Count' in ioc_resp:
+                    ioc_resp['Related' + etype + 'Count'] = len(ioc_resp['Related' + etype])
                 if 'Related' + etype not in self.keys and 'Related' + etype in ioc_resp:
                     del ioc_resp['Related' + etype]
     
