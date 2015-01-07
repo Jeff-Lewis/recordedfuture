@@ -152,11 +152,17 @@ class IOCEnricher(object):
         response : dict
             The enrichment package containing all keys requested by "mode" parameter.
         '''
-        # print "Getting all references"
-        refs, edetails = self._get_all_references()
-        # print "Getting enrichment from references"
-        self._get_enrichment(refs, edetails)
-        # print "Getting URL and Score"
+        print "    Getting all references"
+        max_index = None
+        for names in _chunks(self.iocs.keys(), 250):
+            refs, edetails = self._get_all_references(names)
+            print "      Getting enrichment from references"
+            max_index_cand = self._get_enrichment(refs, edetails)
+            if max_index_cand < max_index or not max_index:
+                # using < here because the references are no longer retrieved all from
+                # the same query, so there may be timings, so we're looking at the minimax
+                max_index = max_index_cand
+            print "      Getting URL and Score"
         for ioc in self.response:
             ioc_resp = self.response[ioc]
             # Get RF URL
@@ -169,7 +175,7 @@ class IOCEnricher(object):
             extra_features = self._get_extra_features()
             for key in extra_features:
                 del ioc_resp[key]
-        return self.response
+        return self.response, max_index
 
     def score(self, ioc_resp):
         spec_keys = ('7DayHits', '1DayHits')
@@ -196,11 +202,13 @@ class IOCEnricher(object):
         ioc_resp['Score'] = ioc_resp['Score'] / max_score        
 
     def _get_enrichment(self, refs, edetails):
+        max_index = None
         today = datetime.datetime.today()
         one_day_hit_string = _rfid_date_conv(today - datetime.timedelta(days=1))
         seven_day_hit_string = _rfid_date_conv(today - datetime.timedelta(days=7))
         
         # first get everything from all references
+        print "    Processing references"
         ioc_to_rfid = self.iocs
         rfid_to_ioc = {}
         for ioc in filter(lambda i: ioc_to_rfid[i], ioc_to_rfid):
@@ -211,6 +219,9 @@ class IOCEnricher(object):
                       "SocialMedia": {}}
         first_pub = {}
         for ref in refs:
+            indexed = ref['document']['indexed']
+            if indexed > max_index or not max_index:
+                max_index = indexed
             fragment = ref['fragment'].lower()
             attrs = ref['attributes']
             source_topic = ref['document']['sourceId'].get('topic', None)
@@ -278,7 +289,7 @@ class IOCEnricher(object):
             # print "Getting related content from documents"
             docs = self._get_docs()
             self._safe_get_related_entities_from_docs(docs)
-            
+        return max_index    
 
     def _safe_update_hits_and_refs(self, ioc_resp, ref, key, condition, cur_date, date_condition):
         pub_date = ref['document']['published']
@@ -308,28 +319,27 @@ class IOCEnricher(object):
             for suffix in filter(lambda suf: key + suf in ioc_resp, key_suffixes):
                 ioc_resp[key + suffix] = key_suffixes[suffix]
                     
-    def _get_all_references(self):
+    def _get_all_references(self, names):
         refs = []
         seen_ids = set()
         edetails = {}
-        for names in _chunks(self.iocs.keys(), 1000):
-            q = {"instance": {"type": "Event",
-                              "limit": 100000,
-                              "searchtype": "scan"}}
-            q['instance']['attributes'] = [[{"name": "Event.event_fragment", 'string': names}]]
-            rfids = [self.iocs[name] for name in names if self.iocs[name]]
-            q['instance']['attributes'][0].append({"name": "entities",
-                                                   "entity": {"id": rfids}})
-            # print len(self.iocs.keys()),
-            for res in self.rfqapi.paged_query(q):
-                refs.extend([inst for inst in res['instances'] if inst['id'] not in seen_ids])
-                seen_ids.update([inst['id'] for inst in res['instances']])
-                edetails.update({ eid: res['entities'][eid] for eid in res['entities'] if res['entities'][eid]['type'] in self._RELATED_ENTITY_TYPES})
+        q = {"instance": {"type": "Event",
+                          "limit": 25000,
+                          "searchtype": "scan"}}
+        q['instance']['attributes'] = [[{"name": "Event.event_fragment", 'string': names}]]
+        rfids = [self.iocs[name] for name in names if self.iocs[name]]
+        q['instance']['attributes'][0].append({"name": "entities",
+                                               "entity": {"id": rfids}})
+        # print len(self.iocs.keys()),
+        for res in self.rfqapi.paged_query(q):
+            refs.extend([inst for inst in res['instances'] if inst['id'] not in seen_ids])
+            seen_ids.update([inst['id'] for inst in res['instances']])
+            edetails.update({ eid: res['entities'][eid] for eid in res['entities'] if res['entities'][eid]['type'] in self._RELATED_ENTITY_TYPES})
         return refs, edetails
 
     def _get_docs(self):
         all_docs = set()
-        for names in _chunks(self.iocs.keys(), 1000):
+        for names in _chunks(self.iocs.keys(), 250):
             q = {"instance": {"type": "Event"},
                  "output": {"count": {"axis": [{"name": "attributes.entities",
                                                 "type": [self.entity_type],
@@ -389,7 +399,7 @@ class IOCEnricher(object):
         if len(eids) == 0:
             return {}
         results = {}
-        for ents in _chunks(eids, 1000):
+        for ents in _chunks(eids, 250):
             q = {"entity": {"id": ents,
                             "limit": 1001}}
             res = self.rfqapi.query(q)
@@ -397,7 +407,7 @@ class IOCEnricher(object):
         return results
 
     def _safe_get_related_entities_from_docs(self, docs):
-        for docids in _chunks(docs, 1000):
+        for docids in _chunks(docs, 250):
             q = {"instance": {"type": "Event",
                               "document": {"id": docids}},
                  "output": {"count": {"axis": ["document",
@@ -429,7 +439,7 @@ class IOCEnricher(object):
     def _get_rfids(self):
         new_iocs = collections.OrderedDict()
         edetails = {}
-        for names in _chunks(self.iocs, 500):
+        for names in _chunks(self.iocs, 250):
             if len(names) == 0: continue
             q = {"entity": {"name": names, 
                             "type": self.entity_type,
