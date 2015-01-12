@@ -436,10 +436,10 @@ class IOCEnricher(object):
                 if 'Related' + etype not in self.keys and 'Related' + etype in ioc_resp:
                     del ioc_resp['Related' + etype]
     
-    def _get_rfids(self):
+    def _get_rfids(self, iocs):
         new_iocs = collections.OrderedDict()
         edetails = {}
-        for names in _chunks(self.iocs, 250):
+        for names in _chunks(iocs, 250):
             if len(names) == 0: continue
             q = {"entity": {"name": names, 
                             "type": self.entity_type,
@@ -448,7 +448,7 @@ class IOCEnricher(object):
             if len(res['entities']) == 0: continue
             for ent in res['entities']:
                 edetails[res['entity_details'][ent]['name']] = ent
-        for ioc in self.iocs:
+        for ioc in iocs:
             new_iocs[ioc] = edetails[ioc] if ioc in edetails else None
         return new_iocs
 
