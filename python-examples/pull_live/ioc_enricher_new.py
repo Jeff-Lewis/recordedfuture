@@ -156,10 +156,7 @@ class IOCEnricher(object):
 	    "limit": 1001
 	  }
 
-      #q = {"entity": {"id": ents,
-      #                "limit": 1001}}
       res = self.rfqapi.query(q)
-      print res
       return res['events']
 
     def enrich(self):
@@ -172,23 +169,12 @@ class IOCEnricher(object):
         print "    Getting all references"
         max_index = None
         for names in _chunks(self.iocs.keys(), 250):
+          refs = self.get_references(names)
 
-	    #refs, edetails = self._get_all_references(names)
-            refs = self.get_references(names)
-            #self._get_enrichment(refs)
-
-	    print "      Getting enrichment from references"
-            #max_index_cand = self._get_enrichment(refs, edetails)
-            #max_index_cand = self._get_enrichment(refs)
-	    #if max_index_cand < max_index or not max_index:
-                # using < here because the references are no longer retrieved all from
-                # the same query, so there may be timings, so we're looking at the minimax
-                #max_index = max_index_cand
-            print "      Getting URL and Score"
-
-        for ioc in self.response:
+          for ioc in self.response:
             ioc_resp = self.response[ioc]
 
+            print "    Enriching response"
             for ref in refs:
 	      ioc_resp['MostRecent'] = ref['stats']['stats']['MostRecent']['Published']
 	      ioc_resp['FirstPublished'] = ref['stats']['stats']['First']['Published']
@@ -206,7 +192,11 @@ class IOCEnricher(object):
               ioc_resp["RecentSocialMediaSource"] = ref['stats']['stats']['RecentSocialMedia']['Source']['name']
               ioc_resp["MostRecentURL"] = ref['stats']['stats']['MostRecent']['URL']
               ioc_resp["RecentSocialMediaFragment"] = ref['stats']['stats']['RecentSocialMedia']['Fragment']
-
+              ioc_resp["FirstFragment"] = ref['stats']['stats']['First']['Fragment']
+	      ioc_resp["MostRecentTitle"] = ref['stats']['stats']['MostRecent']['Title']
+              ioc_resp["RecentPasteURL"] = ref['stats']['stats']['RecentPaste']['URL']
+              ioc_resp["RecentSocialMediaURL"] = ref['stats']['stats']['RecentSocialMedia']['URL']
+	      ioc_resp["RecentSocialMediaTitle"] = ref['stats']['stats']['RecentSocialMedia']['Title']
 
             # Get RF URL
             if 'RFURL' in ioc_resp:
