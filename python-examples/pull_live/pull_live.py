@@ -101,6 +101,9 @@ def build_query(options, args):
             qtype = 'aggregate'
         else:
             qtype = 'instance'
+            query['instance']['search_type'] = 'scan'
+            if 'limit' not in query['instance']:
+                query['instance']['limit'] = 10000
 
         if options.idfile:
             ids = [i.strip() for i in open(options.idfile).readlines()]
@@ -171,12 +174,13 @@ def main():
     if query.get('aggregate') or query.get('output', {}).get('count'):
         res = api.query(query)
         print res
-    else:
-        if options.header:
-            out.writerow(dict(zip(output_columns, output_columns)))
-        if options.entityfile:
-            entityout = csv.DictWriter(open(options.entityfile, 'w'), entity_columns, extrasaction='ignore')
-            entityout.writerow(dict(zip(entity_columns, entity_columns)))
+        return
+        
+    if options.header:
+        out.writerow(dict(zip(output_columns, output_columns)))
+    if options.entityfile:
+        entityout = csv.DictWriter(open(options.entityfile, 'w'), entity_columns, extrasaction='ignore')
+        entityout.writerow(dict(zip(entity_columns, entity_columns)))
 
     for res in api.paged_query(query):
         for i in res['instances']:
