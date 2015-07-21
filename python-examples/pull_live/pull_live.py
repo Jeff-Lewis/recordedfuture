@@ -101,7 +101,7 @@ def build_query(options, args):
             qtype = 'aggregate'
         else:
             qtype = 'instance'
-            query['instance']['search_type'] = 'scan'
+            query['instance']['searchtype'] = 'scan'
             if 'limit' not in query['instance']:
                 query['instance']['limit'] = 10000
 
